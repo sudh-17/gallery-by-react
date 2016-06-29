@@ -3,7 +3,7 @@ require('styles/App.css');
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-let yeomanImage = require('../images/yeoman.png');
+//let yeomanImage = require('../images/yeoman.png');
 //获取图片相关数据
 let imageDatas=require('json!../data/imageDatas.json');
 //利用自执行函数，将图片名信息转成图片URL路径信息
@@ -26,11 +26,12 @@ var ImgFigure=React.createClass({
 	
 	    var styleObj = {};
 		//如果props属性中指定了这张图片的位置，则使用
-		if(this.props.arrange.pos){
+		
+		if(this.props.arrange!=undefined&&!this.props.arrange.pos){
 		   styleObj=this.props.arrange.pos;
 		}
 	     return(
-		    <figure className="img-figure" style={styleObj}>
+		    <figure className="img-figure" style={{styleObj}}>
 			   <img src={this.props.data.imageURL}
 			        alt={this.props.data.title}
 			   />
@@ -55,7 +56,7 @@ Constant:{
 	 rightSecX: [0,0],
 	 y: [0,0]
    },
-    hPosRange:{ //垂直方向的取值范围
+    vPosRange:{ //垂直方向的取值范围
      topY: [0,0],
 	 x: [0,0]
    }
@@ -78,7 +79,7 @@ Constant:{
 		vPosRangeTopY= vPosRange.topY,
 		vPosRangeX= vPosRange.x,
 		
-		imgsArrangeArr= [],
+		imgsArrangeTopArr= [],
 		topImgNum =Math.ceil(Math.random() * 2),
 		//取一个或者不取
 		topImgSpliceIndex = 0,
@@ -90,11 +91,11 @@ Constant:{
 		//取出要布局上侧的图片的状态信息
 		topImgSpliceIndex=Math.ceil(Math.random() * (imgsArrangeArr.length - topImgNum));
 		
-		imgsArrangeTopArr= imgsArrangeArr.splice(topImgSpliceIndex,topImgNum);
+	    imgsArrangeTopArr= imgsArrangeArr.splice(topImgSpliceIndex,topImgNum);
 		//布局位于上侧的图片
 		imgsArrangeTopArr.forEach(function(value, index){
 		   imgsArrangeTopArr[index].pos={
-		       top ： getRangeRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
+		       top :  getRangeRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
 			   left: getRangeRandom(vPosRangeX[0] ,vPosRangeX[1])
 		   };
 		
@@ -109,7 +110,6 @@ Constant:{
 		   }else{
 		   hPosRangeLORX=hPosRangeRightSecX;
 		   }
-		
 		   imgsArrangeArr[i].pos={
 		       top: getRangeRandom(hPosRangeY[0],hPosRangeY[1]),
 			   left: getRangeRandom(hPosRangeLORX[0],hPosRangeLORX[1])
@@ -130,38 +130,40 @@ Constant:{
  getInitialState: function(){
    return{
        imgsArrangeArr: [
-	  /* {
+	  {
 	       pos: {
-		      left : '0',
-			  top : '0'
+		      left : 0,
+			  top : 0
 		   }
-		}*/
+		}
 	   ]
    };
  },
 //组件加载以后，为每张图片计算其位置的范围
 componentDidMount: function(){
-    var stageDOM= React.findDOMNode(this.refs.stage),
-		stageW=stageDOM.scrollWidth,
-		stageH=stageDOM.scrollHeight,
-         halfStageW=Math.ceil(stageW / 2),	
-		 halfStageH=Math.ceil(stageH / 2);	
-		 
+
+    var stageDOM= ReactDOM.findDOMNode(this.refs.stage),
+		stageW=stageDOM.clientWidth,
+		stageH=stageDOM.clientHeight,
+        halfStageW=Math.ceil(stageW/2),
+        halfStageH=Math.ceil(stageH/2);
+	console.log(ReactDOM.findDOMNode(this.refs.stage));
 	//拿到一个imageFigure的大小
-	 var imgFigureDOM= React.findDOMNode(this.refs.imgFigure0),
-		imgW=imgFigureDOM.scrollWidth,
-		imgH=imgFigureDOM.scrollHeight,
-         halfImgW=Math.ceil(imgW / 2),	
-		 halfImgH=Math.ceil(imgH / 2);
+	 var imgFigureDOM= ReactDOM.findDOMNode(this.refs.imgFigure0);	
+	console.log(imgFigureDOM);
+		var imgW=imgFigureDOM.scrollWidth;
+		var imgH=imgFigureDOM.scrollHeight;
+     var   halfImgW=Math.ceil(imgW/2);
+	var	halfImgH=Math.ceil(imgH/2);		
 	 //计算中心图片的位置点
 	 this.Constant.centerPos ={
-	     left ：halfStageW-halfImgW，
-		 top ：halfStageH-halfImgH
+	     left : halfStageW-halfImgW,
+		 top : halfStageH-halfImgH
 	 };
 	 //计算左侧，右侧区域图片排布位置的取值范围
 	 this.Constant.hPosRange.leftSecX[0] = -halfImgW;
 	 this.Constant.hPosRange.leftSecX[1] = halfStageW-halfImgW * 3;
-	 this.Constant.hPosRange.rightSecX[0] = halfStageW+halfImgW;
+	 this.Constant.hPosRange.rightSecX[0] = halfStageW + halfImgW;
 	 this.Constant.hPosRange.rightSecX[1] = stageW-halfImgW;
 	 this.Constant.hPosRange.y[0] = -halfImgH;
 	 this.Constant.hPosRange.y[1] = stageH-halfImgH
@@ -169,26 +171,21 @@ componentDidMount: function(){
 	  this.Constant.vPosRange.topY[0] = -halfImgH;
 	  this.Constant.vPosRange.topY[1] = halfStageH-halfImgH * 3;
 	  this.Constant.vPosRange.x[0] = halfStageW - imgW;
-	  this.Constant.vPosRange.x[1] = halfImgW;
-	  
+	  this.Constant.vPosRange.x[1] = halfImgW; 
 	  this.rearrange(0);
  },
- 
-  render() {
-     
-	 var controllerUnits= [],
-	      imgFigures = [];
-   	imageDatas.forEach((value,index) => {
-	
+  render() {    
+	 var controllerUnits= [],imgFigures = [];
+   	imageDatas.forEach(function(value,index) {
 	      if(!this.state.imgsArrangeArr[index]){
 		      this.state.imgsArrangeArr[index]={
 					  pos: {
-					  left : '0',
-					  top : '0'
+					  left : 0,
+					  top : 0
 				   }
 			  };
 		  }
-          imgFigures.push(<ImgFigure data={value} ref={'imgFigure'+index} arrange={this.state.imgsArrangeArr[index]}/>);
+          imgFigures.push(<ImgFigure data={value} key={'li_' + index++} ref={'imgFigure'+index} arrange={this.state.imgsArrangeArr[index]}/>);
      }.bind(this));
 	 
     return (
