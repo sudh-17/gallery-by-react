@@ -1,6 +1,6 @@
 require('normalize.css/normalize.css');
 require('styles/App.css');
-//测试
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 //let yeomanImage = require('../images/yeoman.png');
