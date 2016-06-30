@@ -27,7 +27,7 @@ var ImgFigure=React.createClass({
 	    var styleObj = {};
 		//如果props属性中指定了这张图片的位置，则使用
 		
-		if(this.props.arrange!=undefined&&!this.props.arrange.pos){
+		if(this.props.arrange!=undefined&&this.props.arrange.pos){
 		   styleObj=this.props.arrange.pos;
 		}
 	     return(
@@ -143,18 +143,16 @@ Constant:{
 componentDidMount: function(){
 
     var stageDOM= ReactDOM.findDOMNode(this.refs.stage),
-		stageW=stageDOM.clientWidth,
-		stageH=stageDOM.clientHeight,
+		stageW=stageDOM.scrollWidth,
+		stageH=stageDOM.scrollHeight,
         halfStageW=Math.ceil(stageW/2),
         halfStageH=Math.ceil(stageH/2);
-	console.log(ReactDOM.findDOMNode(this.refs.stage));
 	//拿到一个imageFigure的大小
-	 var imgFigureDOM= ReactDOM.findDOMNode(this.refs.imgFigure0);	
-	console.log(imgFigureDOM);
-		var imgW=imgFigureDOM.scrollWidth;
-		var imgH=imgFigureDOM.scrollHeight;
-     var   halfImgW=Math.ceil(imgW/2);
-	var	halfImgH=Math.ceil(imgH/2);		
+	 var imgFigureDOM= ReactDOM.findDOMNode(this.refs.imgFigure0),
+		 imgW=imgFigureDOM.scrollWidth,
+		 imgH=imgFigureDOM.scrollHeight,
+        halfImgW=Math.ceil(imgW/2),
+		halfImgH=Math.ceil(imgH/2);
 	 //计算中心图片的位置点
 	 this.Constant.centerPos ={
 	     left : halfStageW-halfImgW,
@@ -171,10 +169,10 @@ componentDidMount: function(){
 	  this.Constant.vPosRange.topY[0] = -halfImgH;
 	  this.Constant.vPosRange.topY[1] = halfStageH-halfImgH * 3;
 	  this.Constant.vPosRange.x[0] = halfStageW - imgW;
-	  this.Constant.vPosRange.x[1] = halfImgW; 
+	  this.Constant.vPosRange.x[1] = halfImgW;
 	  this.rearrange(0);
  },
-  render() {    
+  render() {
 	 var controllerUnits= [],imgFigures = [];
    	imageDatas.forEach(function(value,index) {
 	      if(!this.state.imgsArrangeArr[index]){
@@ -185,7 +183,7 @@ componentDidMount: function(){
 				   }
 			  };
 		  }
-          imgFigures.push(<ImgFigure data={value} key={'li_' + index++} ref={'imgFigure'+index} arrange={this.state.imgsArrangeArr[index]}/>);
+          imgFigures.push(<ImgFigure data={value} key={'imgFigure'+index} ref={'imgFigure'+index} arrange={this.state.imgsArrangeArr[index]}/>);
      }.bind(this));
 	 
     return (
